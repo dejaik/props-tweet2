@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+  <title>Tweet</title>
+  <script src="build/react.js"></script>
+  <script src="build/react-dom.js"></script>
+  <script src="js/moment.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  </head>
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+    var Tweet = React.createClass({
+      render: function() {
+        var {tweet} = this.props;
+          return (
+            <div className="tweet">
+              <Avatar hash={tweet.gravatar}/>
+                  <div className="content">
+                    <NameWithHandle author={tweet.author}/>
+                    <Time time={tweet.timestamp}/>
+                    <Message text={tweet.message}/>
+                      <div className="buttons">
+                      <ReplyButton/>
+                      <RetweetButton count={tweet.retweets}/>
+                      <LikeButton count={tweet.likes}/>
+                      <MoreOptionsButton/>
+                    </div>
+                  </div>
+            </div>
+          );
+        }
+    });
+
+    var Avatar = React.createClass({
+      propTypes: {
+        gravatar: React.PropTypes.string
+      },
+      render: function() {
+        var hash = this.props.hash;
+        var url = `https://www.gravatar.com/avatar/${hash}`;
+        return (
+          <img src={url} className="avatar" />
+        );
+      }
+    });
+
+    var Message = React.createClass({
+      propTypes: {
+        message: React.PropTypes.string
+      },
+      render: function() {
+        return (
+          <div className="message">
+              {this.props.text}
+          </div>
+        );
+      }
+    });
+
+    var NameWithHandle = React.createClass({
+      propTypes: {
+        author: React.PropTypes.shape({
+          name: React.PropTypes.string.isRequired,
+          handle: React.PropTypes.string.isRequired
+        }).isRequired
+      },
+      render: function() {
+        var { name, handle } = this.props.author;
+          return (
+            <span className="name-with-handle">
+            <span className="name">{name}</span>
+            <span className="handle">@{handle}</span>
+            </span>
+          );
+        }
+    });
+
+    var Time = React.createClass({
+      propTypes: {
+        timestamp: React.PropTypes.string
+      },
+      computeTimeString: function() {
+        return moment(this.props.time).fromNow();
+        },
+        render: function() {
+          return (
+            <span className="time">
+            {this.computeTimeString()}
+            </span>
+          );
+        }
+    });
+
+    var ReplyButton = React.createClass({
+      render: function() {
+        return (
+          <i className="fa fa-reply reply-button"/>
+        );
+      }
+    });
+
+    var RetweetButton = React.createClass({
+      // Check that 'count' is a number
+      propTypes: {
+        count: React.PropTypes.number
+      },
+      getCount: function() {
+        if(this.props.count > 0) {
+          return (
+            <span className="retweet-count">
+              {this.props.count}
+            </span>
+          );
+        } else {
+      return null;
+      }
+    },
+      render: function() {
+        return (
+          <span className="retweet-button">
+            <i className="fa fa-retweet"/>
+              {this.getCount()}
+          </span>
+        );
+      }
+    });
+
+    var LikeButton = React.createClass({
+      propTypes: {
+        count: React.PropTypes.number
+      },
+      render: function() {
+        var {count} = this.props;
+          return (
+            <span className="like-button">
+              <i className="fa fa-heart"/>
+                {count > 0 ?
+            <span className="like-count">{count}</span>
+                : null}
+            </span>
+          );
+      }
+    });
+
+    var MoreOptionsButton = React.createClass({
+      render: function() {
+        return (
+          <i className="fa fa-ellipsis-h more-options-button"/>
+        );
+      }
+    });
+
+    var testTweet = {
+      message: "Something about Booby.",
+      gravatar: "32a9f179c0b23536414ff584f9145196",
+        author: {
+          handle: "designer",
+          name: "Didier Kébreau"
+        },
+      likes: 2,
+      retweets: 5,
+      timestamp: "2016-06-30 21:24:37"
+    };
+
+    ReactDOM.render(<Tweet tweet={testTweet}/>,
+document.querySelector('#root'));
+    </script>
+
+  </body>
+</html>
